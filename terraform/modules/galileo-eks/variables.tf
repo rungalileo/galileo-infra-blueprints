@@ -44,6 +44,12 @@ variable "private_subnet_id" {
   description = "A list of subnet IDs where the nodes/node groups will be provisioned"
 }
 
+variable "galileo_connect_role_arn" {
+  type        = string
+  description = "ARN of the Galileo Connect Role. Creates a new role if not provided. For more information, see Galileo Docs."
+  default     = ""
+}
+
 variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)

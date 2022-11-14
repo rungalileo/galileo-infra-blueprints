@@ -54,13 +54,15 @@ resource "aws_iam_policy" "cluster_autoscaler" {
 }
 
 resource "aws_iam_policy" "galileo" {
+  count  = var.galileo_connect_role_arn == "" ? 1 : 0
   name   = "Galileo"
   path   = "/"
   policy = data.aws_iam_policy_document.galileo_policy.json
 }
 
 resource "aws_iam_role" "galileo" {
-  name = "Galileo"
+  count = var.galileo_connect_role_arn == "" ? 1 : 0
+  name  = "Galileo"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -80,8 +82,9 @@ resource "aws_iam_role" "galileo" {
 }
 
 resource "aws_iam_role_policy_attachment" "galileo" {
-  role       = aws_iam_role.galileo.name
-  policy_arn = aws_iam_policy.galileo.arn
+  count      = var.galileo_connect_role_arn == "" ? 1 : 0
+  role       = aws_iam_role.galileo[0].name
+  policy_arn = aws_iam_policy.galileo[0].arn
 }
 
 
@@ -129,8 +132,8 @@ module "eks_galileo" {
       }
 
       tags = {
-        "k8s.io/cluster-autoscaler/CLUSTER_NAME" = "owned",
-        "k8s.io/cluster-autoscaler/enabled"      = "true",
+        "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned",
+        "k8s.io/cluster-autoscaler/enabled"             = "true",
       }
 
       max_unavailable = 1
@@ -167,8 +170,8 @@ module "eks_galileo" {
       }
 
       tags = {
-        "k8s.io/cluster-autoscaler/CLUSTER_NAME" = "owned",
-        "k8s.io/cluster-autoscaler/enabled"      = "true",
+        "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned",
+        "k8s.io/cluster-autoscaler/enabled"             = "true",
       }
 
       max_unavailable = 1
@@ -191,7 +194,7 @@ module "eks_galileo" {
 
   aws_auth_roles = [
     {
-      rolearn  = "${aws_iam_role.galileo.arn}"
+      rolearn  = var.galileo_connect_role_arn == "" ? aws_iam_role.galileo[0].arn : var.galileo_connect_role_arn
       username = "Galileo"
       groups   = ["system:masters"]
     },
