@@ -76,7 +76,7 @@ module "galileo_gke" {
   zones                             = var.zones
   network                           = var.network
   subnetwork                        = var.subnetwork
-  ip_range_pods                     = var.pods_subnet_name
+  ip_range_pods                     = var.pod_subnet_name
   ip_range_services                 = var.service_subnet_name
   regional                          = false
   create_service_account            = false

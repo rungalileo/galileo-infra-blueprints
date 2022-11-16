@@ -13,8 +13,8 @@ provider "kubernetes" {
 
 module "galileo" {
   source              = "../"
-  network             = "default"
-  subnetwork          = "default"
-  pods_subnet_name    = "gke-pod"
-  service_subnet_name = "gke-svc"
+  network             = var.network
+  subnetwork          = var.subnetwork
+  pod_subnet_name     = var.pod_subnet_name
+  service_subnet_name = var.service_subnet_name
 }

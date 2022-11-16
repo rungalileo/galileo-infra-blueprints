@@ -32,7 +32,7 @@ variable "kubernetes_version" {
   default     = "1.23"
 }
 
-variable "pods_subnet_name" {
+variable "pod_subnet_name" {
   type        = string
   description = "The name of the secondary subnet ip range to use for pods"
 }
