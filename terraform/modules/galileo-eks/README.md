@@ -1,3 +1,7 @@
+# Galileo terraform EKS cluster
+
+Terraform module which creates EKS and IAM resources requred to deploy Galileo.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

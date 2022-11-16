@@ -6,8 +6,7 @@ module "galileo" {
   create_kms_key            = false
   cluster_encryption_config = []
 
-  vpc_id            = "vpc-d49621bf"
-  private_subnet_id = ["subnet-8109d6ea", "subnet-726e123e", "subnet-d18b9eab"]
+  vpc_id            = var.vpc_id
+  private_subnet_id = var.private_subnet_id
 
-  galileo_connect_role_arn = "arn:aws:iam::818240400754:role/Galileo"
 }
