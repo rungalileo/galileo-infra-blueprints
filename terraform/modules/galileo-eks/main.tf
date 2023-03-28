@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "cluster_autoscaler" {
 }
 
 resource "aws_iam_policy" "cluster_autoscaler" {
-  name   = "ClusterAutoscaler"
+  name   = "ClusterAutoscaler_${var.cluster_name}"
   path   = "/"
   policy = data.aws_iam_policy_document.cluster_autoscaler.json
 }
