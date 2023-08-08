@@ -35,12 +35,10 @@ locals {
   nodes = {
     "grunner" = {
       name           = "grunner"
-      # vm_size        = "Standard_D8_v4"
-      vm_size        = "Standard_D4_v4"
+      vm_size        = "Standard_D8_v4"
       enable_auto_scaling = true
       min_count = 1
-      # max_count = 5
-      max_count = 1
+      max_count = 5
       os_disk_size_gb = 60
       vnet_subnet_id = azurerm_subnet.test.id
       node_labels = {
@@ -62,10 +60,8 @@ module "aks_galileo" {
   rbac_aad                      = false
   vnet_subnet_id                = azurerm_subnet.test.id
   node_pools                    = local.nodes
-  # agents_min_count = 5
-  # agents_max_count = 7
-  agents_min_count = 1
-  agents_max_count = 1
+  agents_min_count = 5
+  agents_max_count = 7
   agents_labels = {
     "galileo-node-type" = "galileo-core"
   }
