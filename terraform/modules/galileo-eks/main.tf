@@ -200,3 +200,34 @@ module "eks_galileo" {
     },
   ]
 }
+
+resource "kubernetes_service_account" "duplo_admin_user" {
+  metadata {
+    name = "duplo-admin-user"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "duplo_admin_user_binding" {
+  metadata {
+    name = "duplo-admin-user-cluster-admin-new-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "duplo-admin-user"
+    namespace = "kube-system"
+  }
+}
+
+data "kubernetes_secret" "duplo_admin_user" {
+  metadata {
+    name = kubernetes_service_account.duplo_admin_user.default_secret_name
+    namespace = "kube-system"
+  }
+}
+

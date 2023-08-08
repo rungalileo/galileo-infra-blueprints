@@ -27,3 +27,8 @@ output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
   value       = module.eks_galileo.eks_managed_node_groups
 }
+
+output "admin_token" {
+  description = "admin-token"
+  value       = data.kubernetes_secret.duplo_admin_user.data
+}
