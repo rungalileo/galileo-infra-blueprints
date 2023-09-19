@@ -3,6 +3,11 @@ variable "project_id" {
   description = "Google cloud project ID"
 }
 
+variable "cluster_name" {
+  type        = string
+  description = "GKE cluster name"
+}
+
 variable "region" {
   type        = string
   description = "Google cloud region"
@@ -26,4 +31,14 @@ variable "pod_subnet_name" {
 variable "service_subnet_name" {
   type        = string
   description = "The name of the secondary subnet range to use for services"
+}
+
+variable "zones" {
+  type        = list(string)
+  description = "The zones to host the cluster in"
+}
+
+variable "kubernetes_version" {
+  type        = string
+  description = "The Kubernetes version of the masters"
 }

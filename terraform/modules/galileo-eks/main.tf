@@ -11,22 +11,6 @@ provider "kubernetes" {
   }
 }
 
-
-data "aws_iam_policy_document" "galileo_policy" {
-  statement {
-    sid = "galileoPolicy"
-
-    actions = [
-      "eks:AccessKubernetesApi",
-      "eks:DescribeCluster",
-    ]
-
-    resources = [
-      "arn:aws:eks:${var.region}:${data.aws_caller_identity.current.account_id}:cluster/${var.cluster_name}",
-    ]
-  }
-}
-
 data "aws_iam_policy_document" "cluster_autoscaler" {
   statement {
     sid = "ClusterAutoscaler"
@@ -52,41 +36,6 @@ resource "aws_iam_policy" "cluster_autoscaler" {
   path   = "/"
   policy = data.aws_iam_policy_document.cluster_autoscaler.json
 }
-
-resource "aws_iam_policy" "galileo" {
-  count  = var.galileo_connect_role_arn == "" ? 1 : 0
-  name   = "Galileo"
-  path   = "/"
-  policy = data.aws_iam_policy_document.galileo_policy.json
-}
-
-resource "aws_iam_role" "galileo" {
-  count = var.galileo_connect_role_arn == "" ? 1 : 0
-  name  = "Galileo"
-
-  assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Principal" : {
-          "AWS" : [
-            "arn:aws:iam::273352303610:role/GalileoConnect"
-          ],
-          "Service" : "ec2.amazonaws.com"
-        },
-        "Action" : "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "galileo" {
-  count      = var.galileo_connect_role_arn == "" ? 1 : 0
-  role       = aws_iam_role.galileo[0].name
-  policy_arn = aws_iam_policy.galileo[0].arn
-}
-
 
 module "eks_galileo" {
   source  = "terraform-aws-modules/eks/aws"
@@ -191,14 +140,6 @@ module "eks_galileo" {
   }
 
   manage_aws_auth_configmap = true
-
-  aws_auth_roles = [
-    {
-      rolearn  = var.galileo_connect_role_arn == "" ? aws_iam_role.galileo[0].arn : var.galileo_connect_role_arn
-      username = "Galileo"
-      groups   = ["system:masters"]
-    },
-  ]
 }
 
 resource "kubernetes_service_account" "duplo_admin_user" {
@@ -224,9 +165,21 @@ resource "kubernetes_cluster_role_binding" "duplo_admin_user_binding" {
   }
 }
 
-data "kubernetes_secret" "duplo_admin_user" {
+resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
   metadata {
-    name = kubernetes_service_account.duplo_admin_user.default_secret_name
+    name = "duplo-admin-user-secret"
+    namespace = "kube-system"
+    annotations = {
+      "kubernetes.io/service-account.name" = "duplo-admin-user"
+    }
+  }
+
+  type = "kubernetes.io/service-account-token"
+}
+
+data "kubernetes_secret" "duplo_admin_user_secret" {
+  metadata {
+    name = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
     namespace = "kube-system"
   }
 }
