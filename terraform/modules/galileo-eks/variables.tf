@@ -13,7 +13,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.22`)"
   type        = string
-  default     = "1.23"
+  default     = "1.24"
 }
 
 variable "cluster_endpoint_private_access" {
@@ -42,12 +42,6 @@ variable "vpc_id" {
 variable "private_subnet_id" {
   type        = list(string)
   description = "A list of subnet IDs where the nodes/node groups will be provisioned"
-}
-
-variable "galileo_connect_role_arn" {
-  type        = string
-  description = "ARN of the Galileo Connect Role. Creates a new role if not provided. For more information, see Galileo Docs."
-  default     = ""
 }
 
 variable "cluster_enabled_log_types" {

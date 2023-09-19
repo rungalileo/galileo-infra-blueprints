@@ -92,7 +92,7 @@ module "eks_galileo" {
       iam_role_additional_policies = [
         "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
         "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
         "arn:aws:iam::aws:policy/AmazonS3FullAccess",
         "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
@@ -130,7 +130,7 @@ module "eks_galileo" {
       iam_role_additional_policies = [
         "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
         "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler",
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
         "arn:aws:iam::aws:policy/AmazonS3FullAccess",
         "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
