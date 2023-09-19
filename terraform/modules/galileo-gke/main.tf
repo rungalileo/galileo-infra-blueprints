@@ -9,62 +9,10 @@ data "google_project" "galileo" {
 
 data "google_client_config" "default" {}
 
-resource "google_service_account" "galileoconnect" {
-  account_id   = "galileoconnect"
-  display_name = "Galileoconnect servcie account"
-}
-
-resource "google_service_account_iam_binding" "galileoconnect" {
-  count              = length(local.service_account_iam_binding)
-  service_account_id = google_service_account.galileoconnect.id
-  role               = local.service_account_iam_binding[count.index]
-
-  members = [
-    "group:devs@rungalileo.io",
-  ]
-}
-
-resource "google_project_iam_binding" "galileo" {
-  count   = length(local.project_iam_binding)
-  project = data.google_project.galileo.project_id
-  role    = local.project_iam_binding[count.index]
-
-  members = [
-    "serviceAccount:${google_service_account.galileoconnect.email}",
-  ]
-}
-
-resource "google_iam_workload_identity_pool" "galileoconnectpool" {
-  workload_identity_pool_id = "galileoconnectpool"
-  display_name              = "GalileoConnectPool"
-  description               = "Workload ID Pool for Galileo via GitHub Actions"
-  disabled                  = false
-}
-
-resource "google_iam_workload_identity_pool_provider" "galileoconnectprovider" {
-  workload_identity_pool_id          = google_iam_workload_identity_pool.galileoconnectpool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "galileoconnectprovider"
-  display_name                       = "GalileoConnectProvider"
-  disabled                           = false
-  attribute_mapping = {
-    "google.subject"             = "assertion.sub"
-    "attribute.actor"            = "assertion.actor"
-    "attribute.aud"              = "assertion.aud"
-    "attribute.repository_owner" = "assertion.repository_owner"
-    "attribute.repository"       = "assertion.repository"
-  }
-  oidc {
-    issuer_uri = "https://token.actions.githubusercontent.com"
-  }
-}
-
-resource "google_service_account_iam_binding" "workloadidentity" {
-  service_account_id = google_service_account.galileoconnect.name
-  role               = "roles/iam.workloadIdentityUser"
-
-  members = [
-    "principalSet://iam.googleapis.com/projects/${data.google_project.galileo.number}/locations/global/workloadIdentityPools/galileoconnectpool/attribute.repository/rungalileo/deploy",
-  ]
+provider "kubernetes" {
+  host                   = "https://${module.galileo_gke.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(module.galileo_gke.ca_certificate)
 }
 
 module "galileo_gke" {
@@ -151,5 +99,48 @@ module "galileo_gke" {
     galileo-runners = {
       galileo-node-type = "galileo-runner"
     }
+  }
+}
+
+
+resource "kubernetes_service_account" "duplo_admin_user" {
+  metadata {
+    name = "duplo-admin-user"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "duplo_admin_user_binding" {
+  metadata {
+    name = "duplo-admin-user-cluster-admin-new-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "duplo-admin-user"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
+  metadata {
+    name = "duplo-admin-user-secret"
+    namespace = "kube-system"
+    annotations = {
+      "kubernetes.io/service-account.name" = "duplo-admin-user"
+    }
+  }
+
+  type = "kubernetes.io/service-account-token"
+}
+
+data "kubernetes_secret" "duplo_admin_user_secret" {
+  metadata {
+    name = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
+    namespace = "kube-system"
   }
 }

@@ -32,11 +32,9 @@ Terraform module which creates GKE and IAM resources requred to deploy Galileo.
 
 | Name | Type |
 |------|------|
-| [google_iam_workload_identity_pool.galileoconnectpool](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_workload_identity_pool) | resource |
-| [google_iam_workload_identity_pool_provider.galileoconnectprovider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_workload_identity_pool_provider) | resource |
-| [google_project_iam_binding.galileo](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_binding) | resource |
-| [google_service_account.galileoconnect](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
-| [google_service_account_iam_binding.galileoconnect](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_iam_binding) | resource |
+| [kubernetes_service_account.duplo_admin_user](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
+| [kubernetes_cluster_role_binding.duplo_admin_user_binding](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/cluster_role_binding) | resource |
+| [kubernetes_secret_v1.duplo_admin_user_secret](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret_v1) | resource |
 | [google_service_account_iam_binding.workloadidentity](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_iam_binding) | resource |
 | [google_client_config.default](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config) | data source |
 | [google_project.galileo](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project) | data source |
@@ -59,6 +57,7 @@ Terraform module which creates GKE and IAM resources requred to deploy Galileo.
 | Name | Description |
 |------|-------------|
 | <a name="output_ca_certificate"></a> [ca\_certificate](#output\_ca\_certificate) | Cluster ca certificate (base64 encoded) |
+| <a name="admin_token"></a> [admin\_token](#output\_admin\_token) | Cluster admin token |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | Cluster ID |
 | <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | Cluster endpoint |
 | <a name="output_node_pools_names"></a> [node\_pools\_names](#output\_node\_pools\_names) | List of node pools names |

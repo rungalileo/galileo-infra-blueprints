@@ -19,3 +19,9 @@ output "ca_certificate" {
   description = "Cluster ca certificate (base64 encoded)"
   value       = module.galileo_gke.ca_certificate
 }
+
+output "admin_token" {
+  sensitive   = true
+  description = "admin-token"
+  value = lookup(data.kubernetes_secret.duplo_admin_user_secret.data, "token")
+}

@@ -4,6 +4,7 @@ output "cluster_arn" {
 }
 
 output "cluster_certificate_authority_data" {
+  sensitive   = true
   description = "Base64 encoded certificate data required to communicate with the cluster"
   value       = module.eks_galileo.cluster_certificate_authority_data
 }
@@ -26,4 +27,10 @@ output "cluster_version" {
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
   value       = module.eks_galileo.eks_managed_node_groups
+}
+
+output "admin_token" {
+  sensitive   = true
+  description = "admin-token"
+  value = lookup(data.kubernetes_secret.duplo_admin_user_secret.data, "token")
 }
