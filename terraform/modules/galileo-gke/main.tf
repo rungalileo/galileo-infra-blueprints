@@ -49,7 +49,7 @@ module "galileo_gke" {
   node_pools = [
     {
       name               = "galileo-core"
-      machine_type       = "e2-standard-8"
+      machine_type       = "e2-standard-4"
       image_type         = "COS_CONTAINERD"
       min_count          = 4
       max_count          = 5
@@ -64,7 +64,7 @@ module "galileo_gke" {
       machine_type       = "e2-standard-8"
       image_type         = "COS_CONTAINERD"
       min_count          = 1
-      max_count          = 3
+      max_count          = 5
       disk_size_gb       = 100
       disk_type          = "pd-standard"
       auto_repair        = true
