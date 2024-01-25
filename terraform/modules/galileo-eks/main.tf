@@ -110,7 +110,7 @@ module "eks_galileo" {
 
     galileo_runner = {
       ami_type               = "AL2_x86_64"
-      instance_types         = ["m5a.xlarge"]
+      instance_types         = ["m5a.2xlarge"]
       name                   = "galileo-runner"
       use_name_prefix        = false
       create_launch_template = false
