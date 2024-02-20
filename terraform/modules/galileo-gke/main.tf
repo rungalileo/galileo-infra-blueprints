@@ -51,13 +51,13 @@ module "galileo_gke" {
       name               = "galileo-core"
       machine_type       = "e2-standard-4"
       image_type         = "COS_CONTAINERD"
-      min_count          = 4
+      min_count          = 2
       max_count          = 5
       disk_size_gb       = 300
       disk_type          = "pd-standard"
       auto_repair        = true
       auto_upgrade       = true
-      initial_node_count = 4
+      initial_node_count = 3
     },
     {
       name               = "galileo-runners"

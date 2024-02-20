@@ -80,9 +80,9 @@ module "eks_galileo" {
 
       disk_size = 200
 
-      min_size     = 4
-      max_size     = 6
-      desired_size = 5
+      min_size     = 2
+      max_size     = 5
+      desired_size = 3
       labels = {
         galileo-node-type = "galileo-core"
       }
