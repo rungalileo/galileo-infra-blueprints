@@ -11,7 +11,7 @@ provider "kubernetes" {
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", module.eks_galileo.cluster_id]
+    args        = ["eks", "get-token", "--cluster-name", module.eks_galileo.cluster_name]
   }
 }
 
@@ -46,7 +46,7 @@ resource "aws_iam_policy" "cluster_autoscaler" {
 
 module "eks_galileo" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 18.0"
+  version = "~> 20.10.0"
 
   cluster_name                    = var.cluster_name
   cluster_version                 = var.cluster_version
@@ -71,12 +71,12 @@ module "eks_galileo" {
 
   eks_managed_node_groups = {
     galileo_core = {
-      ami_type               = "AL2_x86_64"
+      ami_family             = "AL2_x86_64"
       instance_types         = ["m5a.xlarge"]
       name                   = "galileo-core"
       use_name_prefix        = false
+      use_custom_launch_template = false
       create_launch_template = false
-      launch_template_name   = ""
 
       disk_size = 200
 
@@ -94,27 +94,24 @@ module "eks_galileo" {
 
       max_unavailable = 1
 
-      iam_role_attach_cni_policy = true
-
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
-        "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-        "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-        "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-        "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
-      ]
-
+      iam_role_additional_policies = {
+        AmazonEKSWorkerNodePolicy          = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        ClusterAutoscaler                  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
+        AmazonS3FullAccess                 = "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        CloudWatchAgentServerPolicy        = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+        AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+      }
     }
 
     galileo_runner = {
-      ami_type               = "AL2_x86_64"
+      ami_family             = "AL2_x86_64"
       instance_types         = ["m5a.2xlarge"]
       name                   = "galileo-runner"
       use_name_prefix        = false
+      use_custom_launch_template = false
       create_launch_template = false
-      launch_template_name   = ""
 
       disk_size = 200
 
@@ -132,26 +129,46 @@ module "eks_galileo" {
 
       max_unavailable = 1
 
-      iam_role_attach_cni_policy = true
-
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
-        "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-        "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-        "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-        "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
-      ]
+      iam_role_additional_policies = {
+        AmazonEKSWorkerNodePolicy          = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        ClusterAutoscaler                  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
+        AmazonS3FullAccess                 = "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        CloudWatchAgentServerPolicy        = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+        AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+      }
     }
   }
 
-  manage_aws_auth_configmap = true
+  enable_irsa = true
+}
+
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = <<YAML
+- rolearn: ${module.eks_galileo.eks_managed_node_groups["galileo_core"]["iam_role_arn"]}
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+    - system:bootstrappers
+    - system:nodes
+- rolearn: ${module.eks_galileo.eks_managed_node_groups["galileo_runner"]["iam_role_arn"]}
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+    - system:bootstrappers
+    - system:nodes
+YAML
+  }
 }
 
 resource "kubernetes_service_account" "duplo_admin_user" {
   metadata {
-    name = "duplo-admin-user"
+    name      = "duplo-admin-user"
     namespace = "kube-system"
   }
 }
@@ -174,7 +191,7 @@ resource "kubernetes_cluster_role_binding" "duplo_admin_user_binding" {
 
 resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
   metadata {
-    name = "duplo-admin-user-secret"
+    name      = "duplo-admin-user-secret"
     namespace = "kube-system"
     annotations = {
       "kubernetes.io/service-account.name" = "duplo-admin-user"
@@ -186,8 +203,7 @@ resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
 
 data "kubernetes_secret" "duplo_admin_user_secret" {
   metadata {
-    name = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
+    name      = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
     namespace = "kube-system"
   }
 }
-
