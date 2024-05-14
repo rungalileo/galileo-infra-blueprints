@@ -1,0 +1,97 @@
+name: Terraform Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: Install TFLint
+      run: |
+        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+    - name: TFLint
+      run: tflint
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: Install tfsec
+      run: |
+        curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+
+    - name: tfsec
+      run: tfsec
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: Terraform Plan
+      run: terraform plan
+      working-directory: ./terraform/modules/galileo-aks
+      env:
+        TF_VAR_example: "example"
+
+    - name: Terraform Init for EKS
+      run: terraform init
+      working-directory: ./terraform/modules/galileo-eks
+
+    - name: Terraform Validate for EKS
+      run: terraform validate
+      working-directory: ./terraform/modules/galileo-eks
+
+    - name: TFLint for EKS
+      run: tflint
+      working-directory: ./terraform/modules/galileo-eks
+
+    - name: tfsec for EKS
+      run: tfsec
+      working-directory: ./terraform/modules/galileo-eks
+
+    - name: Terraform Plan for EKS
+      run: terraform plan
+      working-directory: ./terraform/modules/galileo-eks
+      env:
+        TF_VAR_example: "example"
+
+    - name: Terraform Init for GKE
+      run: terraform init
+      working-directory: ./terraform/modules/galileo-gke
+
+    - name: Terraform Validate for GKE
+      run: terraform validate
+      working-directory: ./terraform/modules/galileo-gke
+
+    - name: TFLint for GKE
+      run: tflint
+      working-directory: ./terraform/modules/galileo-gke
+
+    - name: tfsec for GKE
+      run: tfsec
+      working-directory: ./terraform/modules/galileo-gke
+
+    - name: Terraform Plan for GKE
+      run: terraform plan
+      working-directory: ./terraform/modules/galileo-gke
+      env:
+        TF_VAR_example: "example"
