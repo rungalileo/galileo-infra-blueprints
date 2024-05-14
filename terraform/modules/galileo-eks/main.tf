@@ -71,12 +71,12 @@ module "eks_galileo" {
 
   eks_managed_node_groups = {
     galileo_core = {
-      ami_family             = "AL2_x86_64"
-      instance_types         = ["m5a.xlarge"]
-      name                   = "galileo-core"
-      use_name_prefix        = false
+      ami_family                 = "AL2_x86_64"
+      instance_types             = ["m5a.xlarge"]
+      name                       = "galileo-core"
+      use_name_prefix            = false
       use_custom_launch_template = false
-      create_launch_template = false
+      create_launch_template     = false
 
       disk_size = 200
 
@@ -106,12 +106,12 @@ module "eks_galileo" {
     }
 
     galileo_runner = {
-      ami_family             = "AL2_x86_64"
-      instance_types         = ["m5a.2xlarge"]
-      name                   = "galileo-runner"
-      use_name_prefix        = false
+      ami_family                 = "AL2_x86_64"
+      instance_types             = ["m5a.2xlarge"]
+      name                       = "galileo-runner"
+      use_name_prefix            = false
       use_custom_launch_template = false
-      create_launch_template = false
+      create_launch_template     = false
 
       disk_size = 200
 

@@ -11,10 +11,10 @@ resource "aws_vpc" "vpc" {
 
 # Create Public Subnets
 resource "aws_subnet" "public_subnet_a" {
-  vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "192.168.0.0/19"
-  availability_zone = "us-west-2a"
-  map_public_ip_on_launch = true  # Enable auto-assign public IP
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = "192.168.0.0/19"
+  availability_zone       = "us-west-2a"
+  map_public_ip_on_launch = true # Enable auto-assign public IP
 
   tags = {
     Name = "galileo_${var.environment}_public_subnet_a"
@@ -22,9 +22,9 @@ resource "aws_subnet" "public_subnet_a" {
 }
 
 resource "aws_subnet" "public_subnet_b" {
-  vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "192.168.32.0/19"
-  availability_zone = "us-west-2b"
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = "192.168.32.0/19"
+  availability_zone       = "us-west-2b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -33,9 +33,9 @@ resource "aws_subnet" "public_subnet_b" {
 }
 
 resource "aws_subnet" "public_subnet_c" {
-  vpc_id            = aws_vpc.vpc.id
-  cidr_block        = "192.168.64.0/19"
-  availability_zone = "us-west-2c"
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = "192.168.64.0/19"
+  availability_zone       = "us-west-2c"
   map_public_ip_on_launch = true
 
   tags = {

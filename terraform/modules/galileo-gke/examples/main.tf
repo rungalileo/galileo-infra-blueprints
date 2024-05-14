@@ -18,6 +18,6 @@ module "galileo" {
   subnetwork          = var.subnetwork
   pod_subnet_name     = var.pod_subnet_name
   service_subnet_name = var.service_subnet_name
-  kubernetes_version = var.kubernetes_version
-  zones = var.zones
+  kubernetes_version  = var.kubernetes_version
+  zones               = var.zones
 }
