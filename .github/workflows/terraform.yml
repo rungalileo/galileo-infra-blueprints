@@ -14,11 +14,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install OpenTofu
-      run: |
-        curl -LO https://github.com/opentofu/opentofu/releases/download/v1.6.0-beta3/opentofu_1.6.0-beta3_linux_amd64.zip
-        unzip opentofu_1.6.0-beta3_linux_amd64.zip
-        sudo mv opentofu /usr/local/bin/tofu
+    - name: Setup OpenTofu
+      uses: opentofu/setup-opentofu@v1
+      with:
+        tofu_version: 1.6.0-beta3
 
     - name: Verify OpenTofu Installation
       run: tofu version
