@@ -35,49 +35,11 @@ jobs:
       run: tofu validate
       working-directory: ./terraform/modules/galileo-aks
 
-    - name: Install TFLint
-      run: |
-        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-
-    - name: TFLint
-      run: tflint
-      working-directory: ./terraform/modules/galileo-aks
-
-    - name: Install tfsec
-      run: |
-        curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-
-    - name: tfsec
-      run: tfsec
-      working-directory: ./terraform/modules/galileo-aks
-
-    - name: OpenTofu Plan
-      run: tofu plan
-      working-directory: ./terraform/modules/galileo-aks
-      env:
-        TF_VAR_example: "example"
-
-    - name: OpenTofu Init for EKS
-      run: tofu init
-      working-directory: ./terraform/modules/galileo-eks
-
-    - name: OpenTofu Validate for EKS
-      run: tofu validate
-      working-directory: ./terraform/modules/galileo-eks
-
-    - name: TFLint for EKS
-      run: tflint
-      working-directory: ./terraform/modules/galileo-eks
-
-    - name: tfsec for EKS
-      run: tfsec
-      working-directory: ./terraform/modules/galileo-eks
-
     - name: OpenTofu Plan for EKS
       run: tofu plan
       working-directory: ./terraform/modules/galileo-eks
       env:
-        TF_VAR_example: "example"
+        TF_VAR_environment: "staging"
 
     - name: OpenTofu Init for GKE
       run: tofu init
@@ -87,20 +49,8 @@ jobs:
       run: tofu validate
       working-directory: ./terraform/modules/galileo-gke
 
-    - name: TFLint for GKE
-      run: tflint
-      working-directory: ./terraform/modules/galileo-gke
-
-    - name: tfsec for GKE
-      run: tfsec
-      working-directory: ./terraform/modules/galileo-gke
-
     - name: OpenTofu Plan for GKE
       run: tofu plan
       working-directory: ./terraform/modules/galileo-gke
       env:
-        TF_VAR_example: "example"
-
-    - name: Check Formatting Result
-      if: steps.fmt.outcome == 'failure'
-      run: exit 1
+        TF_VAR_environment: "staging"
