@@ -27,13 +27,17 @@ jobs:
       run: tofu fmt -check -recursive
       continue-on-error: true
 
-    - name: OpenTofu Init
+    - name: OpenTofu Init for AKS
       run: tofu init
       working-directory: ./terraform/modules/galileo-aks
 
-    - name: OpenTofu Validate
+    - name: OpenTofu Validate for AKS
       run: tofu validate
       working-directory: ./terraform/modules/galileo-aks
+
+    - name: OpenTofu Init for EKS
+      run: tofu init
+      working-directory: ./terraform/modules/galileo-eks
 
     - name: OpenTofu Plan for EKS
       run: tofu plan
