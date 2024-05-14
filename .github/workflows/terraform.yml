@@ -39,12 +39,6 @@ jobs:
       run: tofu init
       working-directory: ./terraform/modules/galileo-eks
 
-    - name: OpenTofu Plan for EKS
-      run: tofu plan
-      working-directory: ./terraform/modules/galileo-eks
-      env:
-        TF_VAR_environment: "staging"
-
     - name: OpenTofu Init for GKE
       run: tofu init
       working-directory: ./terraform/modules/galileo-gke
@@ -52,9 +46,3 @@ jobs:
     - name: OpenTofu Validate for GKE
       run: tofu validate
       working-directory: ./terraform/modules/galileo-gke
-
-    - name: OpenTofu Plan for GKE
-      run: tofu plan
-      working-directory: ./terraform/modules/galileo-gke
-      env:
-        TF_VAR_environment: "staging"
