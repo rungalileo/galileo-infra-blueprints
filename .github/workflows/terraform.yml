@@ -1,4 +1,4 @@
-name: Terraform Checks
+name: OpenTofu Checks
 
 on:
   pull_request:
@@ -6,28 +6,34 @@ on:
       - main
 
 jobs:
-  terraform:
-    name: Terraform Checks
+  opentofu:
+    name: OpenTofu Checks
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.0.0
+    - name: Install OpenTofu
+      run: |
+        curl -LO https://github.com/opentofu/opentofu/releases/download/v1.6.0-beta3/opentofu_1.6.0-beta3_linux_amd64.zip
+        unzip opentofu_1.6.0-beta3_linux_amd64.zip
+        sudo mv opentofu /usr/local/bin/tofu
 
-    - name: Terraform Format Check
-      run: terraform fmt -check -recursive
+    - name: Verify OpenTofu Installation
+      run: tofu version
 
-    - name: Terraform Init
-      run: terraform init
+    - name: OpenTofu Format Check
+      id: fmt
+      run: tofu fmt -check -recursive
+      continue-on-error: true
+
+    - name: OpenTofu Init
+      run: tofu init
       working-directory: ./terraform/modules/galileo-aks
 
-    - name: Terraform Validate
-      run: terraform validate
+    - name: OpenTofu Validate
+      run: tofu validate
       working-directory: ./terraform/modules/galileo-aks
 
     - name: Install TFLint
@@ -46,18 +52,18 @@ jobs:
       run: tfsec
       working-directory: ./terraform/modules/galileo-aks
 
-    - name: Terraform Plan
-      run: terraform plan
+    - name: OpenTofu Plan
+      run: tofu plan
       working-directory: ./terraform/modules/galileo-aks
       env:
         TF_VAR_example: "example"
 
-    - name: Terraform Init for EKS
-      run: terraform init
+    - name: OpenTofu Init for EKS
+      run: tofu init
       working-directory: ./terraform/modules/galileo-eks
 
-    - name: Terraform Validate for EKS
-      run: terraform validate
+    - name: OpenTofu Validate for EKS
+      run: tofu validate
       working-directory: ./terraform/modules/galileo-eks
 
     - name: TFLint for EKS
@@ -68,18 +74,18 @@ jobs:
       run: tfsec
       working-directory: ./terraform/modules/galileo-eks
 
-    - name: Terraform Plan for EKS
-      run: terraform plan
+    - name: OpenTofu Plan for EKS
+      run: tofu plan
       working-directory: ./terraform/modules/galileo-eks
       env:
         TF_VAR_example: "example"
 
-    - name: Terraform Init for GKE
-      run: terraform init
+    - name: OpenTofu Init for GKE
+      run: tofu init
       working-directory: ./terraform/modules/galileo-gke
 
-    - name: Terraform Validate for GKE
-      run: terraform validate
+    - name: OpenTofu Validate for GKE
+      run: tofu validate
       working-directory: ./terraform/modules/galileo-gke
 
     - name: TFLint for GKE
@@ -90,8 +96,12 @@ jobs:
       run: tfsec
       working-directory: ./terraform/modules/galileo-gke
 
-    - name: Terraform Plan for GKE
-      run: terraform plan
+    - name: OpenTofu Plan for GKE
+      run: tofu plan
       working-directory: ./terraform/modules/galileo-gke
       env:
         TF_VAR_example: "example"
+
+    - name: Check Formatting Result
+      if: steps.fmt.outcome == 'failure'
+      run: exit 1
