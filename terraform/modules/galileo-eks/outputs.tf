@@ -32,5 +32,5 @@ output "eks_managed_node_groups" {
 output "admin_token" {
   sensitive   = true
   description = "admin-token"
-  value = lookup(data.kubernetes_secret.duplo_admin_user_secret.data, "token")
+  value       = lookup(data.kubernetes_secret.duplo_admin_user_secret.data, "token")
 }

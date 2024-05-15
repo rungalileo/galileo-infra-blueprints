@@ -34,13 +34,13 @@ resource "azurerm_subnet" "test" {
 locals {
   nodes = {
     "grunner" = {
-      name           = "grunner"
-      vm_size        = "Standard_D8_v4"
+      name                = "grunner"
+      vm_size             = "Standard_D8_v4"
       enable_auto_scaling = true
-      min_count = 1
-      max_count = 5
-      os_disk_size_gb = 60
-      vnet_subnet_id = azurerm_subnet.test.id
+      min_count           = 1
+      max_count           = 5
+      os_disk_size_gb     = 60
+      vnet_subnet_id      = azurerm_subnet.test.id
       node_labels = {
         "galileo-node-type" = "galileo-runner"
       }
@@ -51,23 +51,23 @@ locals {
 module "aks_galileo" {
   source = "github.com/Azure/terraform-azurerm-aks.git?ref=6.8.0"
 
-  prefix                        = "${var.resource_prefix}-${random_id.prefix.hex}"
-  resource_group_name           = local.resource_group.name
-  os_disk_size_gb               = 60
-  public_network_access_enabled = var.public_network_access_enabled
-  sku_tier                      = "Standard"
+  prefix                            = "${var.resource_prefix}-${random_id.prefix.hex}"
+  resource_group_name               = local.resource_group.name
+  os_disk_size_gb                   = 60
+  public_network_access_enabled     = var.public_network_access_enabled
+  sku_tier                          = "Standard"
   role_based_access_control_enabled = true
-  rbac_aad                      = false
-  vnet_subnet_id                = azurerm_subnet.test.id
-  node_pools                    = local.nodes
-  agents_min_count = 5
-  agents_max_count = 7
+  rbac_aad                          = false
+  vnet_subnet_id                    = azurerm_subnet.test.id
+  node_pools                        = local.nodes
+  agents_min_count                  = 5
+  agents_max_count                  = 7
   agents_labels = {
     "galileo-node-type" = "galileo-core"
   }
-  agents_pool_name = "gcore"
-  agents_size = "Standard_D4_v4"
+  agents_pool_name    = "gcore"
+  agents_size         = "Standard_D4_v4"
   enable_auto_scaling = true
-  kubernetes_version = 1.25
-  depends_on = [ azurerm_resource_group.main ]
+  kubernetes_version  = 1.25
+  depends_on          = [azurerm_resource_group.main]
 }

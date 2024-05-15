@@ -1,6 +1,6 @@
 variable "create_resource_group" {
-  type     = bool
-  default  = true
+  type    = bool
+  default = true
 }
 
 variable "location" {
@@ -28,6 +28,6 @@ variable "resource_prefix" {
 }
 
 variable "public_network_access_enabled" {
-  type     = bool
-  default  = true
+  type    = bool
+  default = true
 }

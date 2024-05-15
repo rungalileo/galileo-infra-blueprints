@@ -1,0 +1,48 @@
+name: OpenTofu Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  opentofu:
+    name: OpenTofu Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup OpenTofu
+      uses: opentofu/setup-opentofu@v1
+      with:
+        tofu_version: 1.6.0-beta3
+
+    - name: Verify OpenTofu Installation
+      run: tofu version
+
+    - name: OpenTofu Format Check
+      id: fmt
+      run: tofu fmt -check -recursive
+      continue-on-error: true
+
+    - name: OpenTofu Init for AKS
+      run: tofu init
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: OpenTofu Validate for AKS
+      run: tofu validate
+      working-directory: ./terraform/modules/galileo-aks
+
+    - name: OpenTofu Init for EKS
+      run: tofu init
+      working-directory: ./terraform/modules/galileo-eks
+
+    - name: OpenTofu Init for GKE
+      run: tofu init
+      working-directory: ./terraform/modules/galileo-gke
+
+    - name: OpenTofu Validate for GKE
+      run: tofu validate
+      working-directory: ./terraform/modules/galileo-gke

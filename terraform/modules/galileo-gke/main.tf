@@ -105,7 +105,7 @@ module "galileo_gke" {
 
 resource "kubernetes_service_account" "duplo_admin_user" {
   metadata {
-    name = "duplo-admin-user"
+    name      = "duplo-admin-user"
     namespace = "kube-system"
   }
 }
@@ -128,7 +128,7 @@ resource "kubernetes_cluster_role_binding" "duplo_admin_user_binding" {
 
 resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
   metadata {
-    name = "duplo-admin-user-secret"
+    name      = "duplo-admin-user-secret"
     namespace = "kube-system"
     annotations = {
       "kubernetes.io/service-account.name" = "duplo-admin-user"
@@ -140,7 +140,7 @@ resource "kubernetes_secret_v1" "duplo_admin_user_secret" {
 
 data "kubernetes_secret" "duplo_admin_user_secret" {
   metadata {
-    name = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
+    name      = kubernetes_secret_v1.duplo_admin_user_secret.metadata[0].name
     namespace = "kube-system"
   }
 }
