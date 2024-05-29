@@ -27,9 +27,9 @@ variable "ml_node_size" {
 }
 
 variable "create_rds_postgres_cluster" {
-  description = "Specifies whether create RDS postgres cluster. Defaults to `true`"
+  description = "Specifies whether create RDS postgres cluster. Defaults to `false`"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "postgres_engine_version" {
