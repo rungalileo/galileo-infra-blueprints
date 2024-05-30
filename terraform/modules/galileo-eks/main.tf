@@ -82,7 +82,7 @@ module "eks_galileo" {
 
       min_size     = 2
       max_size     = 5
-      desired_size = 3
+      desired_size = 2
       labels = {
         galileo-node-type = "galileo-core"
       }
