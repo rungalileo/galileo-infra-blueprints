@@ -53,6 +53,11 @@ Terraform module which creates EKS and IAM resources requred to deploy Galileo.
 | <a name="input_private_subnet_id"></a> [private\_subnet\_id](#input\_private\_subnet\_id) | A list of subnet IDs where the nodes/node groups will be provisioned | `list(string)` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region | `string` | `"us-east-2"` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of the VPC where the cluster and its nodes will be provisioned | `string` | n/a | yes |
+| <a name="input_create_ml_node_group"></a> [create\_ml\_asg](#input\_create\_ml\_node\_group) | Controls if ML node group should be created or not | `bool` | `false` | no |
+| <a name="input_ml_node_size"></a> [ml\_node\_size](#input\_ml\_node\_size) | ML node instance size to use | `string` | `g4dn.2xlarge` | no |
+| <a name="input_create_rds_postgres_cluster"></a> [create\_rds\_postgres\_cluster](#input\_create\_rds\_postgres\_cluster) | Controls if RDS postgres should be created or not | `bool` | `true` | no |
+| <a name="input_postgres_engine_version"></a> [postgres\_engine\_version](#input\_postgres\_engine\_version) | Postgres engine version to use | `string` | `16.1` | no |
+| <a name="input_postgres_cluster_size"></a> [postgres\_cluster\_size](#input\_postgres\_cluster\_size) | Postgres instance size to use | `string` | `db.t3.medium` | no |
 
 ## Outputs
 
