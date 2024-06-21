@@ -70,7 +70,7 @@ module "galileo_gke" {
       auto_repair        = true
       auto_upgrade       = true
       initial_node_count = 1
-    },
+    },],
     var.create_ml_node_group ? 
     [{
       name                       = "galileo-ml"
@@ -90,7 +90,6 @@ module "galileo_gke" {
       max_shared_clients_per_gpu = 2
     }] 
     : []
-  ]
   )
 
   node_pools_oauth_scopes = {
