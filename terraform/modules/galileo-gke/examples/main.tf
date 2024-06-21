@@ -20,4 +20,6 @@ module "galileo" {
   service_subnet_name = var.service_subnet_name
   kubernetes_version  = var.kubernetes_version
   zones               = var.zones
+  create_ml_node_group = var.create_ml_node_group
+  ml_node_size = var.ml_node_size
 }

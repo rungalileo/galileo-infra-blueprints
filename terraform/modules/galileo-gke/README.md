@@ -51,6 +51,8 @@ Terraform module which creates GKE and IAM resources requred to deploy Galileo.
 | <a name="input_service_subnet_name"></a> [service\_subnet\_name](#input\_service\_subnet\_name) | The name of the secondary subnet range to use for services | `string` | n/a | yes |
 | <a name="input_subnetwork"></a> [subnetwork](#input\_subnetwork) | The subnetwork to host the cluster in | `string` | n/a | yes |
 | <a name="input_zones"></a> [zones](#input\_zones) | The zones to host the cluster in | `list(string)` | <pre>[<br>  "us-central1-c"<br>]</pre> | no |
+| <a name="input_create_ml_node_group"></a> [create\_ml\_node\_group](#input\_create\_ml\_node\_group) | Controls if ML node group should be created or not | `bool` | `false` | no |
+| <a name="input_ml_node_size"></a> [ml\_node\_size](#input\_ml\_node\_size) | ML node instance size to use | `string` | `g2-standard-8` | no |
 
 ## Outputs
 
