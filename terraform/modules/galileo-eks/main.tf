@@ -44,6 +44,38 @@ resource "aws_iam_policy" "cluster_autoscaler" {
   policy = data.aws_iam_policy_document.cluster_autoscaler.json
 }
 
+data "aws_iam_policy_document" "galileo_s3_permission" {
+  statement {
+    sid = "AllBucketList"
+
+    actions = [
+      "s3:ListAllMyBuckets"
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+
+  statement {
+    sid = "GalileoBucketFullAccess"
+
+    actions = [
+      "s3:*"
+    ]
+
+    resources = [
+      "arn:aws:s3:::galileo-*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "galileo_s3_permission" {
+  name   = "GalileoS3BucketAccess"
+  path   = "/"
+  policy = data.aws_iam_policy_document.galileo_s3_permission.json
+}
+
 module "eks_galileo" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.10.0"
@@ -98,7 +130,7 @@ module "eks_galileo" {
         AmazonEKSWorkerNodePolicy          = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
         ClusterAutoscaler                  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/ClusterAutoscaler_${var.cluster_name}",
-        AmazonS3FullAccess                 = "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        GalileoS3BucketAccess              = aws_iam_policy.galileo_s3_permission.arn,
         AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         CloudWatchAgentServerPolicy        = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
         AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
