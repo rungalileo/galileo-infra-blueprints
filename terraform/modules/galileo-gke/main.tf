@@ -79,7 +79,7 @@ module "galileo_gke" {
       min_count                  = 1
       max_count                  = 5
       disk_size_gb               = 100
-      disk_type                  = "pd-standard"
+      disk_type                  = "pd-balanced"
       auto_repair                = true
       auto_upgrade               = true
       initial_node_count         = 1
