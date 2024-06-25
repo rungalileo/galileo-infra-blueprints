@@ -17,7 +17,7 @@ provider "kubernetes" {
 
 module "galileo_gke" {
   source                            = "terraform-google-modules/kubernetes-engine/google"
-  version                           = "23.3.0"
+  version                           = "31.0.0"
   project_id                        = data.google_project.galileo.project_id
   name                              = var.cluster_name
   region                            = var.region
