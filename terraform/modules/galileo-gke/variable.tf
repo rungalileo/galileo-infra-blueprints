@@ -29,7 +29,7 @@ variable "subnetwork" {
 variable "kubernetes_version" {
   type        = string
   description = "The Kubernetes version of the masters"
-  default     = "1.23"
+  default     = "1.29"
 }
 
 variable "pod_subnet_name" {
