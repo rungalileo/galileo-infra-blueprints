@@ -44,6 +44,9 @@ module "galileo_gke" {
     min_memory_gb = 0
     max_memory_gb = 200
     gpu_resources = []
+    auto_repair   = true
+    auto_upgrade  = true
+    autoscaling_profile = "BALANCED"
   }
 
   node_pools = concat([
