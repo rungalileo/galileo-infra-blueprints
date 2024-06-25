@@ -17,7 +17,7 @@ provider "kubernetes" {
 
 module "galileo_gke" {
   source                            = "terraform-google-modules/kubernetes-engine/google"
-  version                           = "23.3.0"
+  version                           = "31.0.0"
   project_id                        = data.google_project.galileo.project_id
   name                              = var.cluster_name
   region                            = var.region
@@ -44,9 +44,12 @@ module "galileo_gke" {
     min_memory_gb = 0
     max_memory_gb = 200
     gpu_resources = []
+    auto_repair   = true
+    auto_upgrade  = true
+    autoscaling_profile = "BALANCED"
   }
 
-  node_pools = [
+  node_pools = concat([
     {
       name               = "galileo-core"
       machine_type       = "e2-standard-4"
@@ -70,19 +73,30 @@ module "galileo_gke" {
       auto_repair        = true
       auto_upgrade       = true
       initial_node_count = 1
-    },
-  ]
+    },],
+    var.create_ml_node_group ? 
+    [{
+      name                       = "galileo-ml"
+      machine_type               = "g2-standard-8"
+      image_type                 = "COS_CONTAINERD"
+      min_count                  = 1
+      max_count                  = 5
+      disk_size_gb               = 100
+      disk_type                  = "pd-balanced"
+      auto_repair                = true
+      auto_upgrade               = true
+      initial_node_count         = 1
+      accelerator_count          = 1
+      accelerator_type           = "nvidia-l4"
+      gpu_driver_version         = "LATEST"
+      gpu_sharing_strategy       = "TIME_SHARING"
+      max_shared_clients_per_gpu = 2
+    }] 
+    : []
+  )
 
   node_pools_oauth_scopes = {
-    galileo-core = [
-      "https://www.googleapis.com/auth/devstorage.read_write",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-      "https://www.googleapis.com/auth/servicecontrol",
-      "https://www.googleapis.com/auth/service.management.readonly",
-      "https://www.googleapis.com/auth/trace.append",
-    ]
-    galileo-runner = [
+    all = [
       "https://www.googleapis.com/auth/devstorage.read_write",
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
@@ -98,6 +112,10 @@ module "galileo_gke" {
     }
     galileo-runners = {
       galileo-node-type = "galileo-runner"
+    }
+
+    galileo-ml = {
+      galileo-node-type = "galileo-ml"
     }
   }
 }
